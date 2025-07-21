@@ -1,3 +1,11 @@
-# file_integrity_checker.py
+# 🛡️ File Integrity Checker
+
+This is a Python tool that checks the integrity of files in a folder by generating and comparing SHA-256 hashes.
 this script monitor changes in files by calculating and comparing hash values
-python script that uses libraries like hashlib to ensure file integrity. 
+## 🚀 How to Use
+
+1. Clone the repo or download the file.
+2. Run the script:
+
+```bash
+
