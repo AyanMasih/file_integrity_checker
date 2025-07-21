@@ -1,0 +1,64 @@
+import os
+import hashlib
+import json
+
+# Function to calculate SHA256 hash of a file
+def calculate_hash(filepath):
+    sha256 = hashlib.sha256()
+    try:
+        with open(filepath, 'rb') as f:
+            while chunk := f.read(8192):
+                sha256.update(chunk)
+        return sha256.hexdigest()
+    except FileNotFoundError:
+        return None
+
+# Function to scan files and build hash map
+def scan_directory(directory):
+    hash_data = {}
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            filepath = os.path.join(root, name)
+            file_hash = calculate_hash(filepath)
+            if file_hash:
+                hash_data[filepath] = file_hash
+    return hash_data
+
+# Function to save hash data to file
+def save_hashes(filename, data):
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=4)
+
+# Function to load saved hash data
+def load_hashes(filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Function to check for file changes
+def check_integrity(current, old):
+    for filepath, current_hash in current.items():
+        old_hash = old.get(filepath)
+        if not old_hash:
+            print(f"[NEW] {filepath}")
+        elif old_hash != current_hash:
+            print(f"[MODIFIED] {filepath}")
+    for filepath in old:
+        if filepath not in current:
+            print(f"[DELETED] {filepath}")
+
+# MAIN FUNCTION
+if __name__ == "__main__":
+    directory_to_check = input("Enter directory to monitor: ")
+    hash_file = "hashes.json"
+
+    current_hashes = scan_directory(directory_to_check)
+    previous_hashes = load_hashes(hash_file)
+
+    print("\n📋 Checking integrity...")
+    check_integrity(current_hashes, previous_hashes)
+
+    print("\n💾 Saving updated hash data...")
+    save_hashes(hash_file, current_hashes)
+    print("✅ Done.")
