@@ -9,3 +9,4 @@ This Python tool helps monitor and verify the integrity of files in a directory 
 
 # Author: Ayan Masih
    ```bash
+pip install watchdog
